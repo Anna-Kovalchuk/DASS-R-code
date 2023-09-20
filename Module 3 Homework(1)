@@ -1,0 +1,32 @@
+rm(list=ls())
+library("utils")
+library("tidyverse")
+library(stringr)
+read.csv("C:/Users/NISCI/Desktop/Social Sciemce Econ/Data analysis for social Scientists/Module 3 Summarizing and Describing Data/R/Gender_StatsData.csv", header=FALSE)
+gender_data<-as_tibble( read.csv("C:/Users/NISCI/Desktop/Social Sciemce Econ/Data analysis for social Scientists/Module 3 Summarizing and Describing Data/R/Gender_StatsData.csv"))
+head(gender_data)
+teenager_fr<-filter(gender_data,Indicator.Code=="SP.ADO.TFRT")
+round(mean(teenager_fr$X1975, na.rm = TRUE),2)
+round(sd(teenager_fr$X1975, na.rm = TRUE),2)
+round(mean(teenager_fr$X1960, na.rm = TRUE),2)
+round(sd(teenager_fr$X1960, na.rm = TRUE),2)
+round(mean(teenager_fr$X2000, na.rm = TRUE),2)
+round(sd(teenager_fr$X2000, na.rm = TRUE),2)
+byincomelevel<- filter(teenager_fr,Country.Code%in%c("LIC","MIC","HIC"))
+plotdata_bygroupyear<-gather(byincomelevel,Year,FertilityRate,X1960:X2015) %>%
+select(Year, Country.Name,Country.Code, FertilityRate)
+plotdata_byyear<-plotdata_bygroupyear
+plotdata_byyear<-select(plotdata_byyear,Country.Code,Year,FertilityRate)%>%
+spread(Country.Code,FertilityRate)
+plotdata_byyear<-gather(byincomelevel,Year,FertilityRate,X1960:X2015) %>%
+select(Year, Country.Name,Country.Code, FertilityRate)
+plotdata_byyear<-spread(plotdata_byyear,Country.Code,FertilityRate)
+plotdata_byyear<-gather(byincomelevel,Year,FertilityRate,X1960:X2015) %>%
+select(Year, Country.Name,Country.Code, FertilityRate)
+plotdata_byyear<-select(plotdata_byyear,Country.Code,Year,FertilityRate)%>%
+spread(Country.Code,FertilityRate)
+ggplot (plotdata_bygroupyear, aes(x=Year,y=FertilityRate, group=Country.Code,colour=Country.Code)) +
+geom_line(  )+
+labs(title='Fertility Rate by Country-Income-Level over Time')
+plotdata_bygroupyear<-mutate(plotdata_bygroupyear,Year=as.numeric(str_sub(Year,-4)))
+
